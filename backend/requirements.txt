@@ -1,12 +1,8 @@
 fastapi
 uvicorn
-llama-index
-llama-index-readers-web
-chromadb
 python-dotenv
 pydantic
-beautifulsoup4
 requests
-llama-index-embeddings-huggingface
-llama-index-llms-gemini
-llama-index-llms-groq
+beautifulsoup4
+groq
+markdown
