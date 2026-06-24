@@ -8,15 +8,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
-from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
-from llama_index.core.prompts import PromptTemplate
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.llms.groq import Groq
+from groq import Groq
+import markdown
+import json
 
-# Configure LlamaIndex to use Free Models
-Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
-Settings.llm = Groq(model="llama3-8b-8192")
+# Initialize Groq Client
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Initialize FastAPI
 app = FastAPI(
@@ -89,41 +86,44 @@ def get_lead_category(score: int) -> str:
     elif score <= 80: return "Hot lead"
     else: return "High priority lead"
 
-# --- LlamaIndex Setup ---
-# Instead of ChromaDB connecting to a complex cluster for MVP, we load the structured markdown directly.
-# LlamaIndex will automatically read the metadata from the top of the markdown files!
-index = None
+# --- Custom Knowledge Base ---
+documents = []
 
 @app.on_event("startup")
 def load_knowledge_base():
-    global index
+    global documents
     print("Loading Knowledge Base from structured data...")
     try:
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-        
-        # SimpleDirectoryReader reads the Markdown Frontmatter automatically
-        reader = SimpleDirectoryReader(input_dir=data_dir, recursive=True, required_exts=[".md"])
-        documents = reader.load_data()
-        
-        # Build Vector Index in-memory for the MVP (can be swapped to ChromaDB easily)
-        index = VectorStoreIndex.from_documents(documents)
-        print(f"Loaded {len(documents)} document chunks successfully.")
+        for root, dirs, files in os.walk(data_dir):
+            for file in files:
+                if file.endswith(".md"):
+                    with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        documents.append({
+                            "content": content,
+                            "path": os.path.join(root, file),
+                            "category": "courses" if "courses" in root else "general"
+                        })
+        print(f"Loaded {len(documents)} documents successfully.")
     except Exception as e:
         print(f"Warning: Could not load knowledge base: {e}")
 
-# Strict RAG Prompt
-QA_PROMPT = PromptTemplate(
-    "You are CarePilot AI, the official AI career assistant of Portfolio Builders.\n"
-    "Your role is to help students, parents, and professionals choose the right course, internship, or scholarship.\n"
-    "Context information is below.\n"
-    "---------------------\n"
-    "{context_str}\n"
-    "---------------------\n"
-    "Given the context above, answer the query warmly and clearly. Do not invent fees, batch dates, or guarantees.\n"
-    "If you are unsure, say you will connect them to a counsellor.\n"
-    "Query: {query_str}\n"
-    "Answer: "
-)
+def get_relevant_context(query: str, category_filter: str = None) -> str:
+    # Simple keyword search for the MVP
+    query_words = set(query.lower().split())
+    matches = []
+    for doc in documents:
+        if category_filter and doc["category"] != category_filter:
+            continue
+        score = sum(1 for word in query_words if word in doc["content"].lower())
+        if score > 0:
+            matches.append((score, doc["content"]))
+    
+    matches.sort(key=lambda x: x[0], reverse=True)
+    return "\n\n".join([m[1] for m in matches[:3]])
+
+
 
 # --- Endpoints ---
 @app.post("/api/chat", response_model=ChatResponse)
@@ -135,34 +135,46 @@ async def chat_endpoint(req: ChatRequest):
     # Trigger form if Warm lead or above (score > 30)
     trigger_form = new_score > 30 
     
-    # 2. RAG Retrieval
-    if not index:
-        return ChatResponse(
-            reply="I'm still setting up my knowledge base. Please try again in a moment!",
-            new_score=new_score,
-            lead_category=category,
-            trigger_form=trigger_form
-        )
-        
-    # Build Metadata Filters based on context
-    filters = None
+    # 2. Retrieval
+    category_filter = None
     if req.current_page_url:
         if "course" in req.current_page_url.lower():
-            filters = MetadataFilters(filters=[ExactMatchFilter(key="category", value="courses")])
+            category_filter = "courses"
         elif "internship" in req.current_page_url.lower():
-            filters = MetadataFilters(filters=[ExactMatchFilter(key="category", value="internships")])
+            category_filter = "internships"
 
-    query_engine = index.as_query_engine(
-        filters=filters,
-        text_qa_template=QA_PROMPT,
-        similarity_top_k=3
-    )
+    context = get_relevant_context(req.message, category_filter)
     
-    context_query = f"[User is browsing: {req.current_page_url}] User says: {req.message}"
-    response = query_engine.query(context_query)
+    # 3. Groq Chat Completion with Refined Prompt
+    prompt = f"""
+You are CarePilot AI, the official AI assistant of Portfolio Builders.
+Your goal is to provide VERY CONCISE answers based ONLY on the provided context.
+
+RULES:
+1. Use ONLY the information in the 'Context information' section.
+2. If the answer is not in the context, say: "I'm sorry, I don't have that specific information right now. Please chat with us on WhatsApp at +91 7994721792 for more details!"
+3. Keep answers under 3-4 sentences. Use bullet points if listing items.
+4. Be professional and warm, but direct.
+
+Context information:
+---------------------
+{context}
+---------------------
+
+Query: {req.message}
+Answer:"""
+
+    try:
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        reply = completion.choices[0].message.content
+    except Exception as e:
+        reply = f"I'm having trouble connecting to my brain right now. Error: {str(e)}"
     
     return ChatResponse(
-        reply=str(response),
+        reply=reply,
         new_score=new_score,
         lead_category=category,
         trigger_form=trigger_form
