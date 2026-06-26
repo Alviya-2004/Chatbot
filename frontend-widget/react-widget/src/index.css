@@ -1,25 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
 :root {
-  --pb-bg: #030706;
-  --pb-surface: rgba(3, 7, 6, 0.7);
+  --pb-bg: #0b1020;
+  --pb-surface: rgba(15, 23, 42, 0.7);
   --pb-surface-hover: rgba(255, 255, 255, 0.08);
-  --pb-border: rgba(255, 255, 255, 0.1);
+  --pb-border: rgba(255, 255, 255, 0.08);
   --pb-text-primary: #ffffff;
   --pb-text-secondary: rgba(255, 255, 255, 0.6);
-  --pb-accent: #00df81;
-  --pb-accent-hover: #00ff95;
-  --pb-accent-text: #000000;
-  
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --pb-accent: #6d28d9;
+  --pb-accent-hover: #7c3aed;
+  --pb-success: #00c853;
+  --pb-success-bg: rgba(0, 200, 83, 0.1);
+  --pb-error: #ef4444;
+  --pb-error-bg: rgba(239, 68, 68, 0.1);
+  --font-family: 'Outfit', sans-serif;
 }
 
 body {
   margin: 0;
   font-family: var(--font-family);
+  background-color: #030712;
+  color: var(--pb-text-primary);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* CarePilot Widget Scoped Styles */
+/* CarePilot Widget Root */
 .carepilot-widget-root {
   position: fixed;
   bottom: 24px;
@@ -30,51 +35,97 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 16px;
-  pointer-events: none;
 }
 
 .carepilot-widget-root * {
   box-sizing: border-box;
-  pointer-events: auto;
 }
 
-/* Toggle Button */
+/* Proactive Speech Bubble */
+.carepilot-proactive-bubble {
+  position: absolute;
+  bottom: 80px;
+  right: 10px;
+  width: 280px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--pb-border);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05);
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+  animation: floatUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.carepilot-bubble-text strong {
+  display: block;
+  font-size: 13px;
+  color: var(--pb-success);
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.carepilot-bubble-text p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--pb-text-primary);
+}
+
+.carepilot-bubble-close {
+  background: none;
+  border: none;
+  color: var(--pb-text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 0;
+}
+
+/* Widget Toggle Button */
 .carepilot-toggle {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: var(--pb-accent);
-  color: var(--pb-accent-text);
+  background: linear-gradient(135deg, var(--pb-accent), #4f46e5);
+  color: #fff;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 32px rgba(0, 223, 129, 0.25);
+  box-shadow: 0 10px 30px rgba(109, 40, 217, 0.35);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .carepilot-toggle:hover {
   transform: scale(1.1) rotate(5deg);
-  background: var(--pb-accent-hover);
-  box-shadow: 0 16px 40px rgba(0, 223, 129, 0.35);
+  background: linear-gradient(135deg, var(--pb-accent-hover), #6366f1);
+  box-shadow: 0 12px 36px rgba(109, 40, 217, 0.5);
 }
 
 .carepilot-toggle svg {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
-/* Chat Window */
+/* Chat Window Container */
 .carepilot-window {
   width: 380px;
   height: 600px;
   max-height: calc(100vh - 120px);
-  background: rgba(3, 7, 6, 0.85);
+  background: rgba(11, 16, 32, 0.85);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
+  border: 1px solid var(--pb-border);
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -92,33 +143,63 @@ body {
   pointer-events: auto;
 }
 
-/* Header */
+/* Header UI */
 .carepilot-header {
-  padding: 24px 24px 20px;
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--pb-border);
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
 }
 
 .carepilot-header-title {
-  color: var(--pb-text-primary);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-shadow: 0 0 15px rgba(0, 223, 129, 0.3);
+  gap: 12px;
+}
+
+.carepilot-header-title h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.carepilot-header-title .subtitle {
+  font-size: 11px;
+  color: var(--pb-text-secondary);
+}
+
+.carepilot-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carepilot-action-icon {
+  background: none;
+  border: none;
+  color: var(--pb-text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.carepilot-action-icon:hover {
+  color: var(--pb-text-primary);
+  background: rgba(255,255,255,0.08);
 }
 
 .carepilot-status-dot {
   width: 8px;
   height: 8px;
-  background-color: var(--pb-accent);
+  background-color: var(--pb-success);
   border-radius: 50%;
   display: inline-block;
-  box-shadow: 0 0 12px var(--pb-accent);
+  box-shadow: 0 0 10px var(--pb-success);
   animation: pulse 2s infinite;
 }
 
@@ -137,21 +218,20 @@ body {
   transition: color 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .carepilot-close-btn:hover {
   color: var(--pb-text-primary);
 }
 
-/* Messages Area */
+/* Chat Messages */
 .carepilot-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 24px 24px;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   scrollbar-width: none;
 }
 
@@ -161,39 +241,40 @@ body {
 
 .carepilot-message {
   max-width: 85%;
-  padding: 12px 16px;
-  border-radius: 16px;
-  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 13.5px;
   line-height: 1.5;
-  animation: message-slide-in 0.3s ease-out forwards;
+  animation: slideIn 0.3s ease-out forwards;
 }
 
-@keyframes message-slide-in {
+@keyframes slideIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .carepilot-message.ai {
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--pb-text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--pb-border);
   border-bottom-left-radius: 4px;
 }
 
 .carepilot-message.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, var(--pb-accent), #00b368);
-  color: var(--pb-accent-text);
-  font-weight: 600;
+  background: linear-gradient(135deg, var(--pb-accent), #4f46e5);
+  color: var(--pb-text-primary);
   border-bottom-right-radius: 4px;
-  box-shadow: 0 8px 20px rgba(0, 223, 129, 0.2);
+  box-shadow: 0 5px 15px rgba(109, 40, 217, 0.2);
+  font-weight: 500;
 }
 
+/* Typing Indicators */
 .carepilot-loading-dots {
   display: flex;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: 5px;
+  padding: 6px 2px;
 }
 
 .carepilot-loading-dots span {
@@ -212,26 +293,47 @@ body {
   40% { transform: scale(1); }
 }
 
-/* Input Area */
+/* Quick Replies */
+.carepilot-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 24px 12px;
+}
+
+.carepilot-quick-replies button {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pb-border);
+  border-radius: 20px;
+  color: var(--pb-text-primary);
+  padding: 8px 14px;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.carepilot-quick-replies button:hover {
+  background: var(--pb-accent);
+  border-color: var(--pb-accent);
+  transform: translateY(-1px);
+}
+
+/* Chat Input Block */
 .carepilot-input-area {
-  padding: 20px 24px 24px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--pb-border);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
 }
 
 .carepilot-input-form {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--pb-border);
-  border-radius: 24px;
-  padding: 6px 6px 6px 16px;
-  transition: border-color 0.2s;
-}
-
-.carepilot-input-form:focus-within {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 30px;
+  padding: 6px 6px 6px 18px;
 }
 
 .carepilot-input {
@@ -239,13 +341,8 @@ body {
   background: transparent;
   border: none;
   color: var(--pb-text-primary);
-  font-size: 14px;
-  font-family: var(--font-family);
+  font-size: 13.5px;
   outline: none;
-}
-
-.carepilot-input::placeholder {
-  color: var(--pb-text-secondary);
 }
 
 .carepilot-send-btn {
@@ -253,22 +350,552 @@ body {
   height: 36px;
   border-radius: 50%;
   background: var(--pb-accent);
-  color: var(--pb-accent-text);
+  color: #fff;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
 }
 
 .carepilot-send-btn:hover:not(:disabled) {
-  transform: scale(1.1);
   background: var(--pb-accent-hover);
-  box-shadow: 0 0 15px var(--pb-accent);
+  transform: scale(1.05);
 }
+
 .carepilot-send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
-  transform: none;
+}
+
+.lead-indicator-footer {
+  font-size: 10px;
+  color: var(--pb-text-secondary);
+  text-align: center;
+  margin-top: 8px;
+  letter-spacing: 0.02em;
+}
+
+/* Lead Collection Form Card (Inline) */
+.carepilot-lead-form-card {
+  align-self: center;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--pb-success);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.4s ease-out;
+}
+
+.carepilot-lead-form-card h5 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  color: var(--pb-success);
+  font-weight: 700;
+}
+
+.carepilot-lead-form-card p {
+  margin: 0 0 16px 0;
+  font-size: 11px;
+  color: var(--pb-text-secondary);
+  line-height: 1.4;
+}
+
+.carepilot-lead-form-card input,
+.carepilot-lead-form-card select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pb-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 12.5px;
+  margin-bottom: 12px;
+  outline: none;
+  font-family: var(--font-family);
+}
+
+.carepilot-lead-form-card select option {
+  background: #0f172a;
+}
+
+.carepilot-lead-form-card .select-group {
+  margin-bottom: 12px;
+}
+
+.carepilot-lead-form-card .select-group label {
+  display: block;
+  font-size: 10.5px;
+  color: var(--pb-text-secondary);
+  margin-bottom: 4px;
+}
+
+.carepilot-lead-form-card .select-group select {
+  margin-bottom: 0;
+}
+
+.form-submit-btn {
+  width: 100%;
+  background: var(--pb-success);
+  color: #000;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  transition: opacity 0.2s;
+  font-family: var(--font-family);
+}
+
+.form-submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* WhatsApp CTA Card (Inline) */
+.carepilot-whatsapp-cta-card {
+  align-self: center;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  margin: 10px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: floatUp 0.4s ease-out;
+}
+
+.carepilot-whatsapp-cta-card .icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.carepilot-whatsapp-cta-card h5 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.carepilot-whatsapp-cta-card p {
+  margin: 0 0 16px 0;
+  font-size: 11px;
+  color: var(--pb-text-secondary);
+  line-height: 1.4;
+}
+
+.whatsapp-cta-button {
+  display: inline-block;
+  width: 100%;
+  background: #00e676;
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  transition: all 0.2s;
+}
+
+.whatsapp-cta-button:hover {
+  background: #00c853;
+  transform: translateY(-1px);
+}
+
+
+/* ==========================================
+   ADMIN PANEL DASHBOARD VIEWS
+   ========================================== */
+
+/* Expanded Layout for Admin dashboard mode */
+.carepilot-window.admin-layout {
+  width: 900px;
+  height: 650px;
+  max-width: calc(100vw - 48px);
+}
+
+.carepilot-admin-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+}
+
+.carepilot-admin-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--pb-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.carepilot-admin-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--pb-text-primary);
+}
+
+.carepilot-admin-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.carepilot-admin-nav button {
+  background: transparent;
+  border: 1px solid var(--pb-border);
+  color: var(--pb-text-secondary);
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.carepilot-admin-nav button:hover,
+.carepilot-admin-nav button.active {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: #fff;
+}
+
+.carepilot-admin-nav button.carepilot-admin-close {
+  background: var(--pb-error-bg);
+  color: #f87171;
+  border-color: transparent;
+}
+
+.carepilot-admin-nav button.carepilot-admin-close:hover {
+  background: var(--pb-error);
+  color: #000;
+}
+
+.carepilot-admin-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Statistics Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--pb-border);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.stat-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  color: var(--pb-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* Tables Styling */
+.table-wrapper {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--pb-border);
+}
+
+.admin-table th {
+  background: rgba(255, 255, 255, 0.02);
+  font-weight: 600;
+  color: var(--pb-text-secondary);
+}
+
+.admin-table select {
+  background: #0f172a;
+  color: #fff;
+  border: 1px solid var(--pb-border);
+  border-radius: 6px;
+  padding: 6px;
+  outline: none;
+}
+
+/* Color Coded Lead Rows based on temp */
+.lead-row.temp-high-priority-lead {
+  border-left: 4px solid var(--pb-error);
+}
+.lead-row.temp-hot-lead {
+  border-left: 4px solid #f97316;
+}
+.lead-row.temp-warm-lead {
+  border-left: 4px solid #eab308;
+}
+.lead-row.temp-cold-lead {
+  border-left: 4px solid #3b82f6;
+}
+
+.tag {
+  padding: 4px 8px;
+  font-size: 10.5px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.temp-tag {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--pb-border);
+}
+
+.btn-delete {
+  background: var(--pb-error-bg);
+  color: #f87171;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-delete:hover {
+  background: var(--pb-error);
+  color: #000;
+}
+
+/* Knowledge forms layout */
+.knowledge-forms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.kb-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kb-card.center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.kb-card h4 {
+  margin: 0 0 12px 0;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.kb-card input[type="url"],
+.kb-card input[type="file"],
+.kb-card select {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid var(--pb-border);
+  color: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin-bottom: 8px;
+  outline: none;
+}
+
+.kb-card .form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.kb-card button {
+  background: var(--pb-accent);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+  flex: 1;
+}
+
+.kb-card button:hover {
+  background: var(--pb-accent-hover);
+}
+
+.kb-card button.secondary {
+  background: transparent;
+  border: 1px solid var(--pb-border);
+}
+.kb-card button.secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Fallbacks Management */
+.fallback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fallback-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.fallback-card.resolved-resolved {
+  border-left: 4px solid var(--pb-success);
+  opacity: 0.8;
+}
+
+.fallback-card.resolved-unresolved {
+  border-left: 4px solid var(--pb-error);
+}
+
+.fallback-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.fb-date {
+  font-size: 11px;
+  color: var(--pb-text-secondary);
+}
+
+.fb-tag.status-resolved {
+  background: var(--pb-success-bg);
+  color: #4ade80;
+}
+.fb-tag.status-unresolved {
+  background: var(--pb-error-bg);
+  color: #f87171;
+}
+
+.fb-question, .fb-response {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.fb-solve-form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fb-solve-form textarea {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid var(--pb-border);
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px;
+  font-size: 12.5px;
+  outline: none;
+  font-family: var(--font-family);
+  resize: vertical;
+}
+
+.fb-solve-form button {
+  align-self: flex-end;
+  background: var(--pb-success);
+  color: #000;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.fb-solved-answer {
+  margin-top: 12px;
+  background: rgba(255,255,255,0.02);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  border: 1px dashed var(--pb-border);
+}
+
+/* Alerts */
+.carepilot-alert {
+  padding: 12px 20px;
+  margin: 0 24px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.carepilot-alert.success {
+  background: var(--pb-success-bg);
+  color: #4ade80;
+  border: 1px solid rgba(0, 200, 83, 0.2);
+}
+.carepilot-alert.error {
+  background: var(--pb-error-bg);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Responsive details for widget */
+@media (max-width: 480px) {
+  .carepilot-widget-root {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: 16px;
+  }
+  .carepilot-window {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+  }
 }
