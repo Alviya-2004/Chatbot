@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function AdminPanel({ onClose }) {
+function AdminPanel() {
   const [leads, setLeads] = useState([]);
   const [analytics, setAnalytics] = useState({
     total_sessions: 0,
@@ -191,7 +191,7 @@ function AdminPanel({ onClose }) {
           <button className={activeTab === 'leads' ? 'active' : ''} onClick={() => setActiveTab('leads')}>Leads Management</button>
           <button className={activeTab === 'knowledge' ? 'active' : ''} onClick={() => setActiveTab('knowledge')}>Knowledge Base</button>
           <button className={activeTab === 'fallbacks' ? 'active' : ''} onClick={() => setActiveTab('fallbacks')}>Unanswered FAQs ({fallbacks.length})</button>
-          <button className="carepilot-admin-close" onClick={onClose}>Back to Chat</button>
+          <a href="/" className="carepilot-admin-close" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>Go to Website</a>
         </div>
       </div>
 
