@@ -8,7 +8,7 @@ CarePilot is a smart, AI-powered conversational assistant built specifically for
 - **Retrieval-Augmented Generation (RAG)**: Integrates ChromaDB to store and retrieve company facts, course details, and website context.
 - **Automated Web Crawler**: Built-in scraper to automatically crawl the Portfolio Builders website and index content into the vector database.
 - **Lead Generation & Scoring**: Dynamically evaluates chat interactions to categorize leads (Cold, Warm, Hot) based on intent and automatically prompts high-intent users with a lead-capture form.
-- **Admin Dashboard**: A built-in React control panel to view chatbot analytics, manage the knowledge base, review unresolved fallback questions, and monitor captured leads.
+- **Admin Dashboard**: A standalone, secure React control panel located at `/admin` to view chatbot analytics, manage the knowledge base, review unresolved fallback questions, and monitor captured leads.
 - **Embeddable Widget**: A sleek, responsive React-based floating widget designed to be embedded on any external website.
 
 ---
@@ -79,6 +79,12 @@ To index the live website into the chatbot's brain, ensure the backend is runnin
 cd backend
 python scripts/crawl_website.py
 ```
+
+### 5. Accessing the Admin Dashboard
+The admin dashboard is hosted on a separate secure route from the main widget.
+1. Navigate to `http://localhost:5173/admin` in your browser.
+2. Enter the default passcode: `admin123`.
+3. From here, you can monitor leads, manage the vector index, and train the AI on fallback questions.
 
 ---
 
